@@ -34,3 +34,8 @@ How to check if it is connected correctly
 > I2Cdetect -y 1
 its address is 77. see image1
 
+------------------------------------------
+How to run it
+------------------------------------------
+> python3 bmp180.py
+
