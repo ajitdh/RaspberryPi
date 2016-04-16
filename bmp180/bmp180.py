@@ -26,7 +26,7 @@ class BMP180:
 		# To read out the temperature data word UT (16 bit), the pressure data word UP (16 to 19 bit)
 		# Temperature or pressure value UT or UP 0xF6 (MSB), 0xF7 (LSB), optionally 0xF8 (XLSB)
 		self._register = {'CALIB': 0xAA,
-						  'MEET': 0xFA,
+						  'MEET': 0xF4,
 						  'MSB': 0xF6,
 						  'LSB': 0xF7}
 						  
@@ -45,7 +45,7 @@ class BMP180:
 		# oversampling 0, 1, 2, of 3
 		self._oss = 3
 		
-		#Control registers values for different internal oversampling_setting (oss)
+		# Control registers values for different internal oversampling_setting (oss)
 		# TEMP - Temperature
 		# OSS - Pressure
 		self._crv = {'TEMP' : 0x2E,
@@ -86,7 +86,7 @@ class BMP180:
 			items = [['AC1',True],  # short
 				['AC2',True],  # short
 				['AC3',True],  # short
-				['AC4',False], #unsigned short
+				['AC4',True], #unsigned short
 				['AC5',False], #unsigned short
 				['AC6',False], #unsigned short
 				['B1',True],   # short
@@ -105,9 +105,24 @@ class BMP180:
 			
 		except IOError:
 			return false
-		
+	
+	# see datasheet page 15 
+	# calculate true temperature
 	def _meetTemp(self):
-		pass
+		self._bus.write_byte_data(self._sensor, self._register['MEET'], self._crv['TEMP'])
+		time.sleep(0.005)
+		(mb,lb) = self._bus.read_i2c_block_data(self._sensor, self._register['MSB'], 2)
+		ut = 256 * mb + lb
+		
+		# calculate true temperature x1 = (ut-AC6)*QC5/2 power 15
+		x1 = (ut - self._calib['AC6']) * self._calib['AC5']/math.pow(2,15)
+		
+		# calculate true temperature x2 = (MC*2 power 11)/ X1
+		x2 = self._calib['MC'] * math.pow(2,11)/(x1 + self._calib['MD'])
+		
+		b5 = x1 + x2
+		self._temp = (b5 + 8) / (10 * math.pow(2,4))
+		return b5
 		
 	def _meetDruk(self, b5):
 		pass
