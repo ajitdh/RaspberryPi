@@ -6,7 +6,10 @@
 # if possible (if the device uses only that subset of the I2C protocol)
 # as it makes it possible to use the device driver on both SMBus
 # adapters and I2C adapters.
+# https://www.kernel.org/doc/Documentation/i2c/smbus-protocol
 import smbus
+import time
+import math
 
 #Datasheet: http://www.datasheetspdf.com/PDF/BMP180/770150/1
 class BMP180:
@@ -19,6 +22,9 @@ class BMP180:
 		#7 bit address (will be left shifted to add the read write bit)
 		self._sensor = 0x77  
 		
+		# see page 22 of datasheet
+		# To read out the temperature data word UT (16 bit), the pressure data word UP (16 to 19 bit)
+		# Temperature or pressure value UT or UP 0xF6 (MSB), 0xF7 (LSB), optionally 0xF8 (XLSB)
 		self._register = {'CALIB': 0xAA,
 						  'MEET': 0xFA,
 						  'MSB': 0xF6,
@@ -65,12 +71,18 @@ class BMP180:
 		
 	def meet(self):
 		if(self._leesCalib()):
-			pass
+			self._meetDruk(self._meetTemp())
+			return '%0.01f;%0.02f' % (self._temp, self._druk)
+		else:
+			return '0;0'
+			
+
 	
 	def _leesCalib(self):
 		try:
 			calibDta = self._bus.read_i2c_block_data(self._sensor, self._register['CALIB'], 22)
 			
+			#see page 15 of datasheet
 			items = [['AC1',True],  # short
 				['AC2',True],  # short
 				['AC3',True],  # short
@@ -81,14 +93,24 @@ class BMP180:
 				['B2',True],   # short 
 				['MB',True],   # short
 				['MC',True],   # short
-				['MD',True]]   # short 
-				
-			#see page 15 of datasheet
+				['MD',True]]   # short 				
+			
 			for ndx, el in enumerate(items):
-				pass
+				if(el[1]):
+					tmp = self._signed(calibDta[2*ndx], calibDta[2*ndx+1])
+				else:
+					tmp = self._unsigned(calibDta[2*ndx], calibDta[2*ndx+1])
+				self._calib[el[0]] = tmp
+			return True
 			
 		except IOError:
 			return false
+		
+	def _meetTemp(self):
+		pass
+		
+	def _meetDruk(self, b5):
+		pass
 		
 bmp =  BMP180()
 print (bmp.meet())		
