@@ -32,7 +32,7 @@ How to check if it is connected correctly
 ------------------------------------------
 > sudo su
 > I2Cdetect -y 1
-its address is 77. see image1
+its address is 77
 
 ------------------------------------------
 How to run it
