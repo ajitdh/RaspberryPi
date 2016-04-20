@@ -1,17 +1,16 @@
 ------------------------------------------
 Introduction - DHT11
 ------------------------------------------
- 
-
-------------------------------------------
-Typical applications
-------------------------------------------
-
+The DHT11 is a basic, low-cost digital temperature
+and humidity sensor. It uses a capacitive humidity
+sensor and a thermistor to measure the
+surrounding air, and spits out a digital signal on the
+data pin (no analog input pins needed). 
 
 ------------------------------------------
 Where to find datasheet
 ------------------------------------------
- 
+http://robocraft.ru/files/datasheet/DHT11.pdf
 
 ------------------------------------------
 How to check if it is connected correctly
