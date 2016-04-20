@@ -15,7 +15,7 @@ How to check if it is connected correctly
 ------------------------------------------
 > sudo su
 > I2Cdetect -y 1
-
+its address is 23
 
 ------------------------------------------
 How to run it
