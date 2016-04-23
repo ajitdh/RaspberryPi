@@ -86,7 +86,7 @@ class BMP180:
 			items = [['AC1',True],  # short
 				['AC2',True],  # short
 				['AC3',True],  # short
-				['AC4',True], #unsigned short
+				['AC4',False], #unsigned short
 				['AC5',False], #unsigned short
 				['AC6',False], #unsigned short
 				['B1',True],   # short
@@ -110,8 +110,11 @@ class BMP180:
 	# calculate true temperature
 	def _meetTemp(self):
 		self._bus.write_byte_data(self._sensor, self._register['MEET'], self._crv['TEMP'])
+		
 		time.sleep(0.005)
+		
 		(mb,lb) = self._bus.read_i2c_block_data(self._sensor, self._register['MSB'], 2)
+		
 		ut = 256 * mb + lb
 		
 		# calculate true temperature x1 = (ut-AC6)*QC5/2 power 15
@@ -124,8 +127,74 @@ class BMP180:
 		self._temp = (b5 + 8) / (10 * math.pow(2,4))
 		return b5
 		
+	# calculate true pressure (look in datasheet)
 	def _meetDruk(self, b5):
-		pass
+		#print('b5: %1d' %b5)
+		
+		oss_name = '0SS%1d' % (self._oss)
+		#print('oss_name: ' + oss_name)
+		
+		self._bus.write_byte_data(self._sensor, self._register['MEET'], self._crv[oss_name])
+		
+		time.sleep(0.03)
+		
+		(bt0, bt1, bt2) = self._bus.read_i2c_block_data(self._sensor, self._register['MSB'],3)
+		up = (math.pow(2,16) * bt0 + math.pow(2,8) * bt1 + bt2) / math.pow(2,8-self._oss)		
+		#print('up:', up)
+		
+		b6 = b5 - 4000
+		#print('b6:', b6)
+		
+		x1 = (self._calib['B2'] * (b6 * b6 / math.pow(2,12)))/math.pow(2,11)
+		#print('x1:', x1)
+		
+		x2 = self._calib['AC2'] * b6 / math.pow(2,11)
+		#print('x2:', x2)
+		
+		x3 = x1 + x2
+		#print('x3:', x3)
+		
+		b3 = ((( 4 * self._calib['AC1'] + x3) * math.pow(2, self._oss)) + 2) / 4
+		#print('b3:', b3)
+		
+		x1 = self._calib['AC3'] * b6 / math.pow(2,13)
+		#print('x1: %1d' %x1)
+		
+		x2 = (self._calib['B1'] * (b6 * b6 / math.pow(2,12))) / math.pow(2,16)
+		#print('x2: %1d' %x2)
+		
+		x3 = (2 + x1 + x2) / 4
+		#print('x3: %1d' %x3)
+		
+		# why different?
+		b4 = self._calib['AC4'] * (x3 + math.pow(2,15)) / math.pow(2,15)
+		#print('self._calib AC4:', self._calib['AC4'])
+		#print('b4:', b4)
+		
+		b7 = (up - b3) * (50000/math.pow(2,self._oss))
+		#print('b7: %1d' %b7)
+		
+		# always else
+		p = (b7 / b4) * 2
+		#print('p:', p)
+		
+		x1 = p * p / math.pow(2,16)
+		#print('x1: %1d' %x1)
+		
+		x1 = (x1 * 3038) / math.pow(2,16)
+		#print('x1: %1d' %x1)
+		
+		x2 = (-7357 * p) / math.pow(2,16)
+		#print('x2: %1d' %x2)
+		
+		# why divided by 100?
+		p = (p + (x1 + x2 + 3791) / math.pow(2,4)) / 100
+		#print('p:', p)
+		
+		self._druk = p
+		#print('self._druk: %1d' %self._druk)
+		
+		
 		
 bmp =  BMP180()
 print (bmp.meet())		
