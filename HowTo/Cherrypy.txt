@@ -31,3 +31,9 @@ Remove zip
 Cherrypy - A Minimalist Python Web Framework
 ------------------------------
 > sudo pip3 install cherrypy
+
+
+------------------------------
+start the webserver
+------------------------------
+root@ajit:/home/pi/Projecten/meetstation# python3 web.py
