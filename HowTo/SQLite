@@ -1,3 +1,5 @@
+SQLite
+
 SELECT rowid, jaar, maand, dag, tijdstip FROM meting ORDER BY tijdstip DESC LIMIT 1
 
 
