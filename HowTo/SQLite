@@ -12,6 +12,8 @@ Example
 -----------------------------------
 >sqlite3 dta/meetstation.db
 sqlite> .tables
+sqlite> select * from myTable
+sqlite> ctrl+D
 
 
 
