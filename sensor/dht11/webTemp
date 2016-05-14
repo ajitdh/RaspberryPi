@@ -1,0 +1,40 @@
+#! /usr/bin/env python3
+#  -*- coding:utf-8 -*-
+
+from bin import conf, db
+
+class Web:
+	def meet(self, rowid=0):
+		resultaat = {'meting':0,'max':0,'min':0,'gem':0}
+		
+		try:
+			print("RowId1")
+			print(rowid)
+			
+			dbSql = "SELECT temp FROM dht11 WHERE rowid = %s" % rowid			
+			db.Db.curs().execute(dbSql)
+			dbRij = db.Db.curs().fetchone()
+			resultaat['meting'] = dbRij[0]
+			
+			dbSql = "SELECT jaar, maand, dag FROM meting WHERE rowid = %s" % rowid
+			db.Db.curs().execute(dbSql)
+			dbRij = db.Db.curs().fetchone()
+			jaar = dbRij[0]
+			maand = dbRij[1]
+			dag = dbRij[2]
+			
+			dbSql = "SELECT MAX(temp), MIN(temp), AVG(temp) FROM dht11 WHERE rowid in (SELECT rowid FROM meting where jaar = ? AND maand = ? AND dag = ?)"
+			db.Db.curs().execute(dbSql, (jaar, maand, dag))
+			dbRij = db.Db.curs().fetchone()
+			resultaat['max'] = dbRij[0]
+			resultaat['min'] = dbRij[1]
+			resultaat['gem'] = dbRij[2]
+ 
+			
+		except:			
+			print("ERROR")
+			
+		print("-----------------------------------------------")	
+		
+		
+		return resultaat		
