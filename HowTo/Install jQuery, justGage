@@ -1,0 +1,16 @@
+> mkdir public
+> cd  ..
+> chmod -R 777 public
+
+Download
+> wget http://jquerymobile.com/resources/download/jquery.mobile-1.4.5.zip
+> wget http://justgage.com/justgage-1.2.2.zip
+> wget https://code.jquery.com/jquery-1.12.3.min.js
+
+Unzip/move
+> unzip jquery.mobile-1.4.5.zip -d jqm
+> unzip justgage-1.2.2.zip -d justgage
+> mv jquery* jquery.js
+
+Remove zip
+> rm *.zip
