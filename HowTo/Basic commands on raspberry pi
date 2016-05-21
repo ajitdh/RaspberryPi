@@ -2,4 +2,4 @@
 > chmod 777 -> to change permission of file or folder
 > exit
 > i2cdetect -y 1
-> 
+> rm -> remove
