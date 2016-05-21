@@ -1,7 +1,8 @@
 > sudo su
 > chmod 777 -> to change permission of file or folder
+> chmod -R 777 * -> give all permission to all files and folders recursively
 > exit
-> i2cdetect -y 1
+> i2cdetect -y 1 -> scan an I2C bus for devices. It outputs a table with the list of detected devices on the specified bus.
 > rm -> remove
 > touch -> Either sets the last modified time-stamp of the specified file(s) or creates it if it does not already exist.
 
