@@ -3,3 +3,8 @@
 > exit
 > i2cdetect -y 1
 > rm -> remove
+> touch -> Either sets the last modified time-stamp of the specified file(s) or creates it if it does not already exist.
+
+
+References
+1. https://www.raspberrypi.org/documentation/linux/usage/commands.md
