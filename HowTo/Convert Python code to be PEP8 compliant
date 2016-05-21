@@ -1,0 +1,10 @@
+http://stackoverflow.com/questions/14328406/tool-to-convert-python-code-to-be-pep8-compliant
+
+Tool to convert Python code to be PEP8 compliant
+
+> pip install --upgrade autopep8
+
+> autopep8 --in-place --aggressive --aggressive meet.py
+
+You can check how many violations of each type (before and after)
+> pep8 --quiet --statistics .
