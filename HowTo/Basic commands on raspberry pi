@@ -1,1 +1,4 @@
 > sudo su
+> chmod 777 -> to change permission
+> exit
+> i2cdetect -y 1
